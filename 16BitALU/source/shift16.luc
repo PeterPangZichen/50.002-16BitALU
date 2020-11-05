@@ -1,0 +1,24 @@
+module shift16 (
+    input a[16],
+    input b[16],
+    input alufn[6],
+    output out[16]
+  ) {
+
+  always {
+    case (alufn[2:0]) {
+    
+    3b000:  //shift left
+      out = a << b[3:0];
+    
+    3b001:  //shift right
+      out = a >> b[3:0];
+     
+    3b011:  //shift right with sign extension
+      out = (a >> b[3:0] | 16x{a[15]} << b10000 - b[3:0]);
+     
+    default:
+      out = 16x{0};
+    }
+ }
+}

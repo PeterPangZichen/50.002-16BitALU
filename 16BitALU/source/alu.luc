@@ -1,0 +1,64 @@
+module alu (
+    input a[16],  
+    input b[16],  
+    input alufn[6],
+    output out[16],
+    output z,
+    output v,
+    output n
+  ) {
+  
+  add16 add;
+  bool16 bool;
+  comp16 comp;
+  shift16 shift;
+
+  always {
+    //setup
+    add.a = a;
+    add.b = b;
+    add.alufn = alufn;
+    
+    bool.a = a;
+    bool.b = b;
+    bool.alufn = alufn;
+    
+    comp.z = add.z;
+    comp.v = add.v;
+    comp.n = add.n;
+    comp.alufn = alufn;
+    
+    shift.a = a;
+    shift.b = b;
+    shift.alufn = alufn;
+    
+    z = add.z;
+    v = add.v;
+    n = add.n;
+    
+    //build alu
+    case (alufn[5:4]) {
+    
+      b00:  //add
+      
+        out = add.out;
+        
+      b01:  //bool
+      
+        out = bool.out;
+        
+      b10:  //shift
+      
+        out = shift.out;
+
+      b11:  //comp
+      
+        out = comp.out;
+      
+      default:
+        
+        out = 1b0;
+        
+      }
+  }
+}

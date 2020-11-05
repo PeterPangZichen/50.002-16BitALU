@@ -1,0 +1,195 @@
+module auto_test (
+    input clk,  // clock
+    input rst,  // reset
+    output out[5]  //out[4]: whether the alu passes all test cases
+                   //out[3:0]: the output is wrong for add/bool/comp/shift
+  ) {
+  
+  alu alu16;
+    
+  .clk(clk), .rst(rst) {
+  
+    fsm testcase = {ADD, SUB, MUL, AND, OR, XOR, LDR, CMPEQ, CMPLT, CMPLE,
+    SHL, SHR, SRA, ADDERROR, BOOLERRER, COMPERRER, SHIFTERRER, PASS};
+    
+    }
+  
+  always {
+    //setup
+    out = 0;
+    alu16.a = 0;
+    alu16.b = 0;
+    alu16.alufn = 0;
+    
+    case (testcase.q) {
+      
+      testcase.ADD: //0xabcd+0x1234=0xbe01
+        
+        alu16.a = 16habcd;
+        alu16.b = 16h1234;
+        alu16.alufn = 6b000000;
+        if (alu16.out==16hbe01){
+          testcase.d = testcase.SUB;
+        } else {
+          testcase.d = testcase.ADDERROR;
+        }
+        
+      testcase.SUB:  //0xabcd-0x1234=0x9999
+      
+        alu16.a = 16habcd;
+        alu16.b = 16h1234;
+        alu16.alufn = 6b000001;
+        if (alu16.out==16h9999){
+          testcase.d = testcase.MUL;
+        } else {
+          testcase.d = testcase.ADDERROR;
+        }
+        
+      testcase.MUL:  //0xabcd-0x1234=0xc374fa4
+      
+        alu16.a = 16habcd;
+        alu16.b = 16h1234;
+        alu16.alufn = 6b000010;
+        if (alu16.out==16h4fa4){
+          testcase.d = testcase.AND;
+        } else {
+          testcase.d = testcase.ADDERROR;
+        }
+        
+      testcase.AND:  //10110101 & 10101100 = 10100100
+      
+        alu16.a = 16b0000000010110101;
+        alu16.b = 16b0000000010101100;
+        alu16.alufn = 6b011000;
+        if (alu16.out==16b0000000010100100){
+          testcase.d = testcase.OR;
+        } else {
+          testcase.d = testcase.BOOLERRER;
+        }
+        
+      testcase.OR:  //10110101 | 10101100 = 10111101
+      
+        alu16.a = 16b0000000010110101;
+        alu16.b = 16b0000000010101100;
+        alu16.alufn = 6b011110;
+        if (alu16.out==16b0000000010111101){
+          testcase.d = testcase.XOR;
+        } else {
+          testcase.d = testcase.BOOLERRER;
+        }
+        
+      testcase.XOR:  //10110101 ^ 10101100 = 00011001
+      
+        alu16.a = 16b0000000010110101;
+        alu16.b = 16b0000000010101100;
+        alu16.alufn = 6b010110;
+        if (alu16.out==16b0000000000011001){
+          testcase.d = testcase.LDR;
+        } else {
+          testcase.d = testcase.BOOLERRER;
+        }
+        
+      testcase.LDR:  //10110101 = 10110101
+      
+        alu16.a = 16b0000000010110101;
+        alu16.b = 16b0000000010101100;
+        alu16.alufn = 6b011010;
+        if (alu16.out==16b0000000010110101){
+          testcase.d = testcase.CMPEQ;
+        } else {
+          testcase.d = testcase.BOOLERRER;
+        }
+        
+      testcase.CMPEQ:  //0xabcd = 0xabcd
+      
+        alu16.a = 16habcd;
+        alu16.b = 16habcd;
+        alu16.alufn = 6b110011;
+        if (alu16.out==16h0001){
+          testcase.d = testcase.CMPLT;
+        } else {
+          testcase.d = testcase.COMPERRER;
+        }
+       
+      testcase.CMPLT:  //0xabcd < 0xabce
+      
+        alu16.a = 16habcd;
+        alu16.b = 16habce;
+        alu16.alufn = 6b110101;
+        if (alu16.out==16h0001){
+          testcase.d = testcase.CMPLE;
+        } else {
+          testcase.d = testcase.COMPERRER;
+        }
+        
+      testcase.CMPLE:  //0xabcd <= 0xabce
+      
+        alu16.a = 16habcd;
+        alu16.b = 16habce;
+        alu16.alufn = 6b110111;
+        if (alu16.out==16h0001){
+          testcase.d = testcase.SHL;
+        } else {
+          testcase.d = testcase.COMPERRER;
+        }
+        
+      testcase.SHL:  //00101001 << 2 = 10100100
+      
+        alu16.a = 16b0000000000101001;
+        alu16.b = 16b0000000000000010;
+        alu16.alufn = 6b100000;
+        if (alu16.out==16b0000000010100100){
+          testcase.d = testcase.SHR;
+        } else {
+          testcase.d = testcase.SHIFTERRER;
+        }
+        
+      testcase.SHR:  //00101001 >> 2 = 00001010
+      
+        alu16.a = 16b0000000000101001;
+        alu16.b = 16b0000000000000010;
+        alu16.alufn = 6b100001;
+        if (alu16.out==16b0000000000001010){
+          testcase.d = testcase.SRA;
+        } else {
+          testcase.d = testcase.SHIFTERRER;
+        } 
+        
+      testcase.SRA:  //00101001 >> 2 = 00001010
+      
+        alu16.a = 16b0000000000101001;
+        alu16.b = 16b0000000000000010;
+        alu16.alufn = 6b100011;
+        if (alu16.out==16b0000000000001010){
+          testcase.d = testcase.PASS;
+        } else {
+          testcase.d = testcase.SHIFTERRER;
+        }  
+        
+      testcase.PASS:
+        
+        out = 5b10000;
+        testcase.d = testcase.PASS;
+        
+      testcase.ADDERROR:
+        
+        out = 5b01000;
+        testcase.d = testcase.ADDERROR;
+        
+      testcase.BOOLERRER:
+        
+        out = 5b00100;
+        testcase.d = testcase.BOOLERRER;
+        
+      testcase.COMPERRER:
+        
+        out = 5b00010;
+        testcase.d = testcase.COMPERRER;
+        
+      testcase.SHIFTERRER:
+        
+        out = 5b00001;
+        testcase.d = testcase.SHIFTERRER;
+        
+  }
+}

@@ -1,0 +1,27 @@
+module bool16 (
+    input a[16],
+    input b[16],
+    input alufn[6],
+    output out[16]
+  ) {
+
+  always {
+    case (alufn[3:0]) { 
+    
+            4b1000:  //and
+                out = a & b;
+                
+            4b1110:  //or
+                out = a | b;
+                
+            4b0110:  //xor
+                out = a ^ b;
+                
+            4b1010:  //"a"
+                out = a;
+            
+            default:
+                out = b0;
+            }
+        }
+}

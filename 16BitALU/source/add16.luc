@@ -1,0 +1,59 @@
+module add16 (
+    input a[16],  
+    input b[16],  
+    input alufn[6],
+    output out[16],
+    output z,
+    output v,
+    output n
+    
+  ) {
+
+  sig tmpout[16];
+  sig tmpb[16];
+  
+  always {
+    z = 0;
+    v = 0;
+    n = 0;
+    
+    case(alufn[1:0]){
+    
+      2b00:  //add
+      
+        tmpout = a+b;
+        
+        z = (tmpout==16x{0});
+        v = ((a[15]&b[15]&!tmpout[15])|(!a[15]&!b[15]&tmpout[15]));
+        n = tmpout[15];
+        
+      2b01:  //sub
+        
+        tmpb = b^16x{alufn[0]};
+        tmpout = a+tmpb+1;
+        
+        z = (tmpout==16x{0});
+        v = ((a[15]&tmpb[15]&!tmpout[15])|(!a[15]&!tmpb[15]&tmpout[15]));
+        n = tmpout[15];
+        
+      2b10:  //mul
+        
+        tmpout = a*b;
+        
+      2b11:  //produce z,v,n for comp
+        
+        tmpb = b^16x{alufn[0]};
+        tmpout = a+tmpb+1;
+        
+        z = (tmpout==16x{0});
+        v = ((a[15]&tmpb[15]&!tmpout[15])|(!a[15]&!tmpb[15]&tmpout[15]));
+        n = tmpout[15];
+      
+      default:
+      
+        tmpout = 0;
+    }
+    
+    out = tmpout;
+  }
+}

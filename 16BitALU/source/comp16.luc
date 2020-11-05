@@ -1,0 +1,31 @@
+module comp16 (
+    input z,  
+    input v, 
+    input n, 
+    input alufn[6],   
+    output out[16] 
+  ) { 
+ 
+  always { 
+    out = 0;    
+     
+    case(alufn[2:1]){
+    
+      2b01:  //a=b
+      
+        out[0] = z;   
+          
+      2b10:  //a<b
+      
+        out[0] = n^v;
+        
+      2b11:  //a<=b
+      
+        out[0] = n^v|z;
+        
+      default:
+        
+        out = b0;
+  } 
+}
+}

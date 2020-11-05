@@ -1,0 +1,57 @@
+module manual_test (
+    input clk,
+    input rst,
+    input in[16],
+    input switch[2],
+    input alufn[6],
+    output out[16]
+  ) {
+  
+  alu alu16;
+  
+  .clk(clk), .rst(rst) {
+  
+    fsm test = {INPUTA, INPUTB, OUTPUT};
+    dff inputa[16];  //save input a
+    dff inputb[16];  //save input b
+    
+    }
+  
+  always {
+  
+    //setup
+    out = b0;
+    alu16.a = b0;
+    alu16.b = b0;
+    alu16.alufn = alufn;
+    
+    //fsm
+    case(test.q) {
+    
+      test.INPUTA:
+        
+        if (switch[1]) {
+          inputa.d = in;
+          test.d = test.INPUTB;
+        } else {
+          test.d = test.INPUTA;
+        }
+        
+      test.INPUTB:
+      
+        if (switch[0]) {
+          inputb.d = in;
+          test.d = test.OUTPUT;
+        } else {
+          test.d = test.INPUTB;
+        }
+      
+      test.OUTPUT:
+      
+        alu16.a = inputa.q;
+        alu16.b = inputb.q;
+        out = alu16.out;
+        test.d = test.OUTPUT;
+        
+  }
+}
