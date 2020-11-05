@@ -28,25 +28,25 @@ module manual_test (
     //fsm
     case(test.q) {
     
-      test.INPUTA:
+      test.INPUTA:  // function: enter 16bit number in 'in' and flip switch[1] to 1 to save it as inputa
         
-        if (switch[1]) {
+        if (switch[1]) {  // if switch[1] == 1, read manually inputted 'in' to inputa and go to state INPUTB next
           inputa.d = in;
           test.d = test.INPUTB;
-        } else {
+        } else {  // while switch[1] == 0 stay at state INPUTA
           test.d = test.INPUTA;
         }
         
-      test.INPUTB:
+      test.INPUTB:  // function: enter 16bit number in 'in' and flip switch[0] to 1 to save it as inputb
       
-        if (switch[0]) {
+        if (switch[0]) {  // if switch[0] == 1, read manually inputted 'in' to inputb and go to state OUTPUT next
           inputb.d = in;
           test.d = test.OUTPUT;
-        } else {
+        } else {  // while switch[0] == 0 stay at state INPUTB
           test.d = test.INPUTB;
         }
       
-      test.OUTPUT:
+      test.OUTPUT:  // funtion: performs computations on inputa and inputb using alu16 and sets the output to 'out'. Stays at state OUTPUT (Halt).
       
         alu16.a = inputa.q;
         alu16.b = inputb.q;
