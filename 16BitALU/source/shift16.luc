@@ -9,14 +9,14 @@ module shift16 (
     case (alufn[2:0]) {
     
     3b000:  //shift left
-      out = a << b[3:0];
+      out = a << b[3:0]; // we only need the first 4 bits (of b) to encode all 15 shifting possibilities
     
     3b001:  //shift right
       out = a >> b[3:0];
      
     3b011:  //shift right with sign extension
-      out = (a >> b[3:0] | 16x{a[15]} << b10000 - b[3:0]);
-     
+      out = (a >> b[3:0] | 16x{a[15]} << b10000 - b[3:0]); // shift to the right by the number stated in b[3:0], shift 16bits of the last bit of a to the left
+                                                           // by (16 - the number stated in b[3:0]) and then bitwise 'or' them together
     default:
       out = 16x{0};
     }
